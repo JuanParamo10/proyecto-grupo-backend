@@ -8,6 +8,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { EmpleadosModule } from './empleados/empleados.module';
 import { EstadoEmpleadoModule } from './estado-empleado/estado-empleado.module';
 import { UsuarioRolModule } from './usuario-rol/usuario-rol.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UsuarioRolModule } from './usuario-rol/usuario-rol.module';
     EmpleadosModule,
     EstadoEmpleadoModule,
     UsuarioRolModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
