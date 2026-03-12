@@ -18,9 +18,9 @@ import { UsuarioRolModule } from './usuario-rol/usuario-rol.module';
       port: 5432,
       username: 'root',
       password: 'password123',
-      database: 'avicolabase_db', // Tu base de datos actualizada
-      autoLoadEntities: true,     // Fundamental para que encuentre tus tablas
-      synchronize: true,          // Crea las tablas automáticamente
+      database: 'avicolabase_db',
+      autoLoadEntities: true,
+      synchronize: false, // <-- ¡CÁMBIALO A FALSE!
     }),
     
     // AQUÍ REGISTRAMOS LOS MÓDULOS PARA QUE RESPONDAN EN POSTMAN

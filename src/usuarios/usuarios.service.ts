@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
+import { CreateUsuarioDto } from './dto/create-usuario.dto'; // <-- DTO importado
 
 @Injectable()
 export class UsuariosService {
@@ -10,8 +11,8 @@ export class UsuariosService {
     private readonly usuarioRepository: Repository<Usuario>,
   ) {}
 
-  // Crear un nuevo usuario (Cambiamos el 'any' por 'Partial<Usuario>')
-  async create(createUsuarioDto: Partial<Usuario>): Promise<Usuario> {
+  // Crear un nuevo usuario usando las reglas estrictas del DTO
+  async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
     const nuevoUsuario = this.usuarioRepository.create(createUsuarioDto);
     return await this.usuarioRepository.save(nuevoUsuario);
   }
