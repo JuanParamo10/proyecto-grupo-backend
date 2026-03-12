@@ -3,12 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { GalponModule } from './modules/galpon/galpon.module';
 import { LoteModule } from './modules/lote/lote.module';
-import { InsumoModule } from './modules/insumo/insumo.module';
 import { InventarioModule } from './modules/inventario/inventario.module';
+import { InsumosModule } from './modules/insumos/insumos.module';
 import { TipoInsumoModule } from './modules/tipo-insumo/tipo-insumo.module';
 import { UnidadMedidaModule } from './modules/unidad-medida/unidad-medida.module';
 import { ConsumoAlimentoModule } from './modules/consumo-alimento/consumo-alimento.module';
 import { EntregasModule } from './modules/entregas/entregas.module';
+import { EntregasProductoModule } from './modules/entregas-producto/entregas-producto.module';
+import { ProduccionModule } from './modules/produccion/produccion.module';
 
 @Module({
   imports: [
@@ -27,12 +29,14 @@ import { EntregasModule } from './modules/entregas/entregas.module';
     }),
     GalponModule,
     LoteModule,
-    InsumoModule,
     InventarioModule,
+    InsumosModule,
     TipoInsumoModule,
     UnidadMedidaModule,
     ConsumoAlimentoModule,
     EntregasModule,
+    EntregasProductoModule,
+    ProduccionModule,
   ],
 })
 export class AppModule {}

@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Lote } from '../../lote/entities/lote.entity';
+import { Insumo } from '../../insumos/entities/insumo.entity';
 
 @Entity('consumo_alimento')
 export class ConsumoAlimento {
@@ -9,8 +11,16 @@ export class ConsumoAlimento {
   @Column('timestamp with time zone', { default: () => 'now()' })
   fecha: Date;
 
+  @ManyToOne(() => Lote, (lote) => lote.consumosAlimento, { nullable: true })
+  @JoinColumn({ name: 'lote_id' })
+  lote: Lote;
+
   @Column('int')
   lote_id: number;
+
+  @ManyToOne(() => Insumo, (insumo) => insumo.consumosAlimento, { nullable: true })
+  @JoinColumn({ name: 'insumo_id' })
+  insumo: Insumo;
 
   @Column('int')
   insumo_id: number;

@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Lote } from '../../lote/entities/lote.entity';
 
 @Entity('galpon')
 export class Galpon {
@@ -14,4 +15,7 @@ export class Galpon {
 
   @Column('text', { nullable: true })
   descripcion: string;
+
+  @OneToMany(() => Lote, (lote) => lote.galpon)
+  lotes: Lote[];
 }

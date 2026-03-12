@@ -1,16 +1,16 @@
-import { IsString, IsInt, MinLength, IsPositive } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateEntregaDto {
-
     @IsString()
-    @MinLength(3)
     quienRecibe: string;
 
-    @IsInt()
-    @IsPositive()
-    cantidad: number;
+    @IsNumber()
+    cantidad: number;  
 
+    @IsOptional()  
     @IsString()
-    @MinLength(1)
-    observaciones: string;
+    observaciones?: string;
+
+    @IsUUID() 
+    insumoId: string;
 }
