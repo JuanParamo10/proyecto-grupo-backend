@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { EmpleadosService } from './empleados.service';
 import { CreateEmpleadoDto } from './dto/create-empleado.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('empleados')
+@UseGuards(AuthGuard('jwt')) // <-- El cerrojo: protege todas las rutas de este controlador
 export class EmpleadosController {
   constructor(private readonly empleadosService: EmpleadosService) {}
 
