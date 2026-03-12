@@ -6,7 +6,7 @@ export class ProduccionDiaria {
   id: number;
 
   @Column({ type: 'date', default: () => 'CURRENT_DATE' })
-  fecha: Date;
+fecha: Date;
 
   @Column({ type: 'int', nullable: true })
   loteId: number;
