@@ -1,26 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { EstadoEmpleado } from './entities/estado-empleado.entity';
 import { CreateEstadoEmpleadoDto } from './dto/create-estado-empleado.dto';
-import { UpdateEstadoEmpleadoDto } from './dto/update-estado-empleado.dto';
 
 @Injectable()
 export class EstadoEmpleadoService {
-  create(createEstadoEmpleadoDto: CreateEstadoEmpleadoDto) {
-    return 'This action adds a new estadoEmpleado';
+  constructor(
+    @InjectRepository(EstadoEmpleado)
+    private readonly estadoEmpleadoRepository: Repository<EstadoEmpleado>,
+  ) {}
+
+  async create(createEstadoEmpleadoDto: CreateEstadoEmpleadoDto): Promise<EstadoEmpleado> {
+    const nuevoEstado = this.estadoEmpleadoRepository.create(createEstadoEmpleadoDto);
+    return await this.estadoEmpleadoRepository.save(nuevoEstado);
   }
 
-  findAll() {
-    return `This action returns all estadoEmpleado`;
+  async findAll(): Promise<EstadoEmpleado[]> {
+    return await this.estadoEmpleadoRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} estadoEmpleado`;
+  async findOne(id: number): Promise<EstadoEmpleado> {
+    const estado = await this.estadoEmpleadoRepository.findOne({ where: { id } });
+    if (!estado) {
+      throw new NotFoundException(`Estado con ID ${id} no encontrado`);
+    }
+    return estado;
   }
 
-  update(id: number, updateEstadoEmpleadoDto: UpdateEstadoEmpleadoDto) {
-    return `This action updates a #${id} estadoEmpleado`;
+  async update(id: number, updateEstadoEmpleadoDto: any): Promise<EstadoEmpleado> {
+    const estado = await this.findOne(id);
+    this.estadoEmpleadoRepository.merge(estado, updateEstadoEmpleadoDto);
+    return await this.estadoEmpleadoRepository.save(estado);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} estadoEmpleado`;
+  async remove(id: number): Promise<void> {
+    const estado = await this.findOne(id);
+    await this.estadoEmpleadoRepository.remove(estado);
   }
 }
