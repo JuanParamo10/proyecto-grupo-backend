@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EntregasModule } from './modules/entregas/entregas.module';
 import { InventarioModule } from './modules/inventario/inventario.module';
 import { InsumosModule } from './modules/insumos/insumos.module';
+import { EntregasProductoModule } from './modules/entregas-producto/entregas-producto.module';
+import { ProduccionModule } from './modules/produccion/produccion.module';
 
 @Module({
   imports: [
@@ -17,12 +19,14 @@ import { InsumosModule } from './modules/insumos/insumos.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true, 
+      synchronize: true,
     }),
 
     EntregasModule,
     InventarioModule,
     InsumosModule,
+    EntregasProductoModule,
+    ProduccionModule,
   ],
 })
 export class AppModule {}
