@@ -4,6 +4,7 @@ import { ConsumoAlimento } from '../../consumo-alimento/entities/consumo-aliment
 import { ProduccionDiaria } from '../../produccion/entities/produccion-diaria.entity';
 import { Muerte } from '../../produccion/entities/muerte.entity';
 
+
 @Entity('lote')
 export class Lote {
 
