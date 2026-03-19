@@ -4,6 +4,7 @@ import { ProduccionService } from './produccion.service';
 import { ProduccionController } from './produccion.controller';
 import { ProduccionDiaria } from './entities/produccion-diaria.entity';
 import { Muerte } from './entities/muerte.entity';
+import { LoteModule } from '../lote/lote.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { Muerte } from './entities/muerte.entity';
       ProduccionDiaria,
       Muerte,
     ]),
+    LoteModule,
   ],
   controllers: [ProduccionController],
   providers: [ProduccionService],

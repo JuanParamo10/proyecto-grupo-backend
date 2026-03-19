@@ -1,9 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Lote } from '../../lote/entities/lote.entity';
 
 @Entity({ name: 'muerte' })
 export class Muerte {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @ManyToOne(() => Lote, (lote) => lote.muertes, { nullable: true })
+  @JoinColumn({ name: 'loteId' })
+  lote: Lote;
 
   @Column({ type: 'int', nullable: true })
   loteId: number;
