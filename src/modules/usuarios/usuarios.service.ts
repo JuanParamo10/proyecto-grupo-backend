@@ -1,61 +1,80 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
-import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import * as bcrypt from 'bcrypt'; // <-- 1. Importamos la librería de encriptación
+import { Empleado } from '../empleados/entities/empleado.entity'; 
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuariosService {
   constructor(
-    @InjectRepository(Usuario)
-    private readonly usuarioRepository: Repository<Usuario>,
+    @InjectRepository(Usuario) private usuarioRepo: Repository<Usuario>,
+    @InjectRepository(Empleado) private empleadoRepo: Repository<Empleado>
   ) {}
 
-  async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
-    // 2. Definimos el nivel de seguridad de la encriptación (10 es el estándar)
-    const saltRounds = 10;
+  async create(data: any) {
+    try {
+      // 1. Encriptamos la contraseña
+      const passwordLimpia = data.password ? String(data.password) : '12345678';
+      const hashedPassword = await bcrypt.hash(passwordLimpia, 10);
 
-    // 3. Transformamos la contraseña de texto plano a texto encriptado
-    const hashedPassword = await bcrypt.hash(createUsuarioDto.password, saltRounds);
+      // 2. Creamos el usuario
+      const nuevoUsuario = this.usuarioRepo.create({
+        nombre: data.nombre || data.nombres,
+        apellidos: data.apellidos,
+        username: data.documento || data.username,
+        password: hashedPassword,
+        email: data.email,
+        documento: data.documento,
+        telefono: data.telefono,
+        direccion: data.direccion,
+        activo: true
+      });
 
-    // 4. Armamos el usuario usando los datos del DTO, pero reemplazando el password
-    const nuevoUsuario = this.usuarioRepository.create({
-      ...createUsuarioDto,
-      password: hashedPassword, // Guardamos la versión encriptada
-    });
+      const usuarioGuardado = await this.usuarioRepo.save(nuevoUsuario);
 
-    return await this.usuarioRepository.save(nuevoUsuario);
-  }
+      // 3. Creamos el empleado amarrado
+      const nuevoEmpleado = this.empleadoRepo.create({
+        usuarioId: usuarioGuardado.id,
+        cargo: 'Operario',
+        estadoEmpleadoId: 1
+      });
 
-  async findAll(): Promise<Usuario[]> {
-    return await this.usuarioRepository.find();
-  }
+      const empleadoGuardado = await this.empleadoRepo.save(nuevoEmpleado);
 
-  async findOne(id: number): Promise<Usuario> {
-    const usuario = await this.usuarioRepository.findOne({ where: { id } });
-    if (!usuario) {
-      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+      return { ...usuarioGuardado, empleadoId: empleadoGuardado.id };
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Error interno al crear usuario y empleado.');
     }
+  }
+
+  async findAll() {
+    return await this.usuarioRepo.find();
+  }
+
+  // 🔥 FUNCIONES VITALES PARA EL LOGIN Y CONTROLADOR 🔥
+  async findOne(id: number) {
+    const usuario = await this.usuarioRepo.findOne({ where: { id } });
+    if (!usuario) throw new NotFoundException(`Usuario #${id} no encontrado`);
     return usuario;
   }
 
-  async findByUsername(username: string): Promise<Usuario> {
-    const usuario = await this.usuarioRepository.findOne({ where: { username } });
-    if (!usuario) {
-      throw new NotFoundException(`Usuario con username '${username}' no encontrado`);
+  async findByUsername(username: string) {
+    return await this.usuarioRepo.findOne({ where: { username } });
+  }
+
+  async update(id: number, data: any) {
+    const usuario = await this.usuarioRepo.preload({ id, ...data });
+    if (!usuario) throw new NotFoundException(`Usuario #${id} no encontrado`);
+    return await this.usuarioRepo.save(usuario);
+  }
+
+  async remove(id: number) {
+    const user = await this.usuarioRepo.findOne({ where: { id } });
+    if (user) {
+      await this.usuarioRepo.remove(user);
     }
-    return usuario;
-  }
-
-  async update(id: number, updateUsuarioDto: any): Promise<Usuario> {
-    const usuario = await this.findOne(id);
-    this.usuarioRepository.merge(usuario, updateUsuarioDto);
-    return await this.usuarioRepository.save(usuario);
-  }
-
-  async remove(id: number): Promise<void> {
-    const usuario = await this.findOne(id);
-    await this.usuarioRepository.remove(usuario);
+    return { message: 'Usuario eliminado' };
   }
 }

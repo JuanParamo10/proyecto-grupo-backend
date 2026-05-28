@@ -1,31 +1,36 @@
-import { IsString, IsNotEmpty, IsEmail, MinLength, MaxLength, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsEmail, IsBoolean, MinLength } from 'class-validator';
 
 export class CreateUsuarioDto {
   @IsString()
-  @IsNotEmpty({ message: 'El nombre es obligatorio' })
-  @MaxLength(150)
-  nombre: string;
+  nombre!: string;
 
   @IsString()
-  @IsOptional()
-  @MaxLength(150)
-  apellidos?: string;
+  apellidos!: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'El nombre de usuario es obligatorio' })
-  @MaxLength(100)
-  username: string;
+  username!: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'La contraseña es obligatoria' })
   @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
-  password: string;
+  password!: string;
 
-  @IsEmail({}, { message: 'El correo debe ser un email válido' })
+  @IsEmail({}, { message: 'El formato del correo no es válido' })
+  email!: string;
+
   @IsOptional()
-  email?: string;
-
   @IsBoolean()
-  @IsOptional()
   activo?: boolean;
+
+  @IsString()
+  documento!: string;
+
+  @IsString()
+  telefono!: string;
+
+  @IsString()
+  direccion!: string;
+
+  // 🔥 NUEVO: Dejamos pasar el paquete JSON de los permisos 🔥
+  @IsOptional()
+  permisos?: any;
 }

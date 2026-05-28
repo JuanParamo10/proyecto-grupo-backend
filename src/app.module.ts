@@ -21,6 +21,7 @@ import { EmpleadosModule } from './modules/empleados/empleados.module';
 import { EstadoEmpleadoModule } from './modules/estado-empleado/estado-empleado.module';
 import { UsuarioRolModule } from './modules/usuario-rol/usuario-rol.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { DiagnosticosModule } from './modules/diagnosticos/diagnosticos.module';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { AuthModule } from './modules/auth/auth.module';
       password: process.env.DB_PASSWORD || '123',
       database: process.env.DB_NAME || 'avicola_db',
       autoLoadEntities: true,
-      synchronize: true, // Esto creará las tablas de tus compañeras automáticamente
+      synchronize: false, // Esto creará las tablas de tus compañeras automáticamente
     }),
     // REGISTRO DE TODOS LOS MÓDULOS UNIFICADOS
     GalponModule,
@@ -52,6 +53,7 @@ import { AuthModule } from './modules/auth/auth.module';
     EstadoEmpleadoModule,
     UsuarioRolModule,
     AuthModule,
+    DiagnosticosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

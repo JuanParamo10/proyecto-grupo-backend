@@ -1,26 +1,16 @@
-
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
-import { Usuario } from '../../usuarios/entities/usuario.entity';
-import { EstadoEmpleado } from '../../estado-empleado/entities/estado-empleado.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('empleado')
 export class Empleado {
-  @PrimaryGeneratedColumn('identity')
-  id: number;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-  @Column({ type: 'varchar', length: 150, nullable: true })
-  cargo: string;
+  @Column({ nullable: true, default: 'Operario' }) 
+  cargo!: string;
 
-  @CreateDateColumn({ type: 'timestamp with time zone' })
-  created_at: Date;
+  @Column({ name: 'usuario_id' })
+  usuarioId!: number;
 
-  // Llave foránea a Usuario
-  @OneToOne(() => Usuario, (usuario) => usuario.empleado)
-  @JoinColumn({ name: 'usuario_id' })
-  usuario: Usuario;
-
-  // Llave foránea a EstadoEmpleado
-  @ManyToOne(() => EstadoEmpleado)
-  @JoinColumn({ name: 'estado_empleado_id' })
-  estado: EstadoEmpleado;
+  @Column({ name: 'estado_empleado_id', default: 1 })
+  estadoEmpleadoId!: number;
 }

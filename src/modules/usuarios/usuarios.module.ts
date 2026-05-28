@@ -3,12 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsuariosService } from './usuarios.service';
 import { UsuariosController } from './usuarios.controller';
 import { Usuario } from './entities/usuario.entity';
+// 🔥 1. Importamos la entidad Empleado 🔥
+import { Empleado } from '../empleados/entities/empleado.entity'; 
 
-// En src/usuarios/usuarios.module.ts asegúrate de tener esto:
 @Module({
-  imports: [TypeOrmModule.forFeature([Usuario])],
+  // 🔥 2. Le damos permiso al módulo de Usuarios para usar ambas tablas 🔥
+  imports: [TypeOrmModule.forFeature([Usuario, Empleado])], 
   controllers: [UsuariosController],
   providers: [UsuariosService],
-  exports: [UsuariosService], // <-- ¡ESTA LÍNEA ES OBLIGATORIA!
+  exports: [UsuariosService]
 })
 export class UsuariosModule {}

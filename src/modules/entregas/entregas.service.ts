@@ -13,7 +13,6 @@ export class EntregasService {
   constructor(
     @InjectRepository(Entrega)
     private readonly entregaRepository: Repository<Entrega>,
-
     private readonly insumosService: InsumosService,
   ) {}
 
@@ -87,10 +86,7 @@ export class EntregasService {
       take: limit,  
       skip: offset,
       relations: ['insumo'],
-      
-      order: {
-      fechaCreacion: 'DESC'
-    }
+      order: { fechaCreacion: 'DESC' }
     });
   }
 
@@ -110,18 +106,15 @@ export class EntregasService {
   }
 
   async findToday() {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0); 
+    const start = new Date();
+    start.setHours(0, 0, 0, 0); 
+    const end = new Date();
+    end.setHours(23, 59, 59, 999); 
 
-  const end = new Date();
-  end.setHours(23, 59, 59, 999); 
-
-  return await this.entregaRepository.find({
-    where: {
-      fechaCreacion: Between(start, end)
-    },
-    relations: ['insumo'],
-    order: { fechaCreacion: 'DESC' }
-  });
-}
+    return await this.entregaRepository.find({
+      where: { fechaCreacion: Between(start, end) },
+      relations: ['insumo'],
+      order: { fechaCreacion: 'DESC' }
+    });
+  }
 }

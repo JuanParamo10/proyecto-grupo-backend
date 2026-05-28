@@ -1,40 +1,44 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsuariosService } from '../usuarios/usuarios.service';
 import { JwtService } from '@nestjs/jwt';
+import { UsuariosService } from '../usuarios/usuarios.service';
 import * as bcrypt from 'bcrypt';
-import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usuariosService: UsuariosService,
-    private readonly jwtService: JwtService,
+    private usuariosService: UsuariosService,
+    private jwtService: JwtService
   ) {}
 
-  async login(loginDto: LoginDto) {
-    const { username, password } = loginDto;
-
-    // 1. Buscamos al usuario por su username
+  async login(username: string, pass: string) {
+    // 1. Buscamos al usuario en la BD
     const usuario = await this.usuariosService.findByUsername(username);
 
-    // 2. Comparamos la contraseña enviada con la que está en la base de datos (encriptada)
-    const isPasswordValid = await bcrypt.compare(password, usuario.password);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciales no válidas');
+    // Si no existe, lo rebotamos
+    if (!usuario) {
+      throw new UnauthorizedException('Usuario o contraseña incorrectos');
     }
 
-    // 3. Si todo está bien, generamos el Token
+    // 2. Comparamos las contraseñas
+    const isPasswordValid = await bcrypt.compare(pass, usuario.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Usuario o contraseña incorrectos');
+    }
+
+    // 3. Generamos el Token de acceso
     const payload = { sub: usuario.id, username: usuario.username };
 
-   // ... (lo que ya tienes arriba)
+    // 4. Retornamos el token y TODOS los datos útiles, incluyendo permisos
     return {
-      usuario: {
+      access_token: await this.jwtService.signAsync(payload),
+      user: {
         id: usuario.id,
         username: usuario.username,
         nombre: usuario.nombre,
-      },
-      token: this.jwtService.sign(payload),
+        // 🔥 AQUÍ ENVIAMOS LOS PERMISOS AL FRONTEND 🔥
+        permisos: usuario.permisos 
+      }
     };
-  } // Cierre del método login
-} // Cierre de la clase AuthService
+  }
+}

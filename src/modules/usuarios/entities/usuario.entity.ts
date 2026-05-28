@@ -1,34 +1,38 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne } from 'typeorm';
-import { Empleado } from '../../empleados/entities/empleado.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('usuario')
 export class Usuario {
-  @PrimaryGeneratedColumn('identity')
-  id: number;
+  @PrimaryGeneratedColumn() 
+  id!: number;
 
-  @Column({ type: 'varchar', length: 150 })
-  nombre: string;
+  @Column() 
+  nombre!: string;
 
-  @Column({ type: 'varchar', length: 150, nullable: true })
-  apellidos: string;
+  @Column() 
+  apellidos!: string;
 
-  @Column({ type: 'varchar', length: 100, unique: true })
-  username: string;
+  @Column() 
+  username!: string;
 
-  // ¡Recuerda que en el futuro la contraseña debe ir encriptada!
-  @Column({ type: 'varchar', length: 255 })
-  password: string;
+  @Column() 
+  password!: string; 
 
-  @Column({ type: 'varchar', length: 150, nullable: true })
-  email: string;
+  @Column() 
+  email!: string;
 
-  @Column({ type: 'boolean', default: true })
-  activo: boolean;
+  @Column({ default: true }) 
+  activo!: boolean;
 
-  @CreateDateColumn({ type: 'timestamp with time zone' })
-  created_at: Date;
+  @Column({ nullable: true }) 
+  documento!: string;
 
-  // Relación con Empleado
-  @OneToOne(() => Empleado, (empleado) => empleado.usuario)
-  empleado: Empleado;
+  @Column({ nullable: true }) 
+  telefono!: string;
+
+  @Column({ nullable: true }) 
+  direccion!: string;
+
+  // 🔥 NUEVO: El cajón para guardar los switches de permisos 🔥
+  @Column({ type: 'json', nullable: true })
+  permisos!: any;
 }

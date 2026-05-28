@@ -22,7 +22,32 @@ export class ProduccionService {
       ...createDto,
       fecha: createDto.fecha ? new Date(createDto.fecha) : new Date(),
     });
-    return await this.produccionDiariaRepository.save(produccion);
+    
+    // 1. Guardamos el historial en el diario de producción
+    const guardado = await this.produccionDiariaRepository.save(produccion);
+
+    // 🔥 2. LA MAGIA: El Puente Automático hacia el Inventario 🔥
+    // Preparamos los misiles con las cantidades que el galponero acaba de registrar
+    const tallas = [
+      { nombre: 'Huevos Jumbo', cantidad: createDto.jumbo || 0 },
+      { nombre: 'Huevos AAA', cantidad: createDto.aaa || 0 },
+      { nombre: 'Huevos AA', cantidad: createDto.aa || 0 },
+      { nombre: 'Huevos A', cantidad: createDto.a || 0 },
+      { nombre: 'Huevos B', cantidad: createDto.b || 0 },
+      { nombre: 'Huevos C', cantidad: createDto.c || 0 },
+    ];
+
+    // Disparamos directo a la base de datos para sumar el stock sin enredar los módulos
+    for (const talla of tallas) {
+      if (talla.cantidad > 0) {
+        await this.produccionDiariaRepository.query(
+          `UPDATE insumos SET stock = stock + $1 WHERE nombre = $2 AND tipo = 'PRODUCTO'`,
+          [talla.cantidad, talla.nombre]
+        );
+      }
+    }
+
+    return guardado;
   }
 
   async findAllProduccionDiaria() {

@@ -5,6 +5,9 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // 🌟 AQUÍ ESTÁ EL PERMISO: Esto evita el error de CORS con Angular
+  app.enableCors();
+
   // Prefijo para todas las rutas: http://localhost:3000/api/...
   app.setGlobalPrefix('api');
 
