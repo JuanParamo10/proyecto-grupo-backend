@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
@@ -6,11 +6,63 @@ import { Empleado } from '../empleados/entities/empleado.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class UsuariosService {
+export class UsuariosService implements OnModuleInit {
   constructor(
     @InjectRepository(Usuario) private usuarioRepo: Repository<Usuario>,
     @InjectRepository(Empleado) private empleadoRepo: Repository<Empleado>
   ) {}
+
+  // 🔥 1. Función que arranca sola al prender el servidor
+  async onModuleInit() {
+    await this.crearAdminPredeterminado();
+  }
+
+  // 🔥 2. Lógica para inyectar el súper usuario y su perfil de empleado
+  private async crearAdminPredeterminado() {
+    try {
+      const adminExiste = await this.findByUsername('admin');
+
+      if (!adminExiste) {
+        console.log('⚠️ Usuario admin no encontrado. Creando administrador maestro...');
+        
+        const hashedPassword = await bcrypt.hash('Yamboro2026*', 10);
+
+        // Creamos el usuario Admin
+        const nuevoAdmin = this.usuarioRepo.create({
+          nombre: 'Super',
+          apellidos: 'Administrador',
+          username: 'admin',
+          documento: '0000000000',
+          password: hashedPassword,
+          email: 'admin@yamboro.edu.co',
+          telefono: '0000000000',
+          direccion: 'Unidad Avícola',
+          activo: true
+        });
+
+        const adminGuardado = await this.usuarioRepo.save(nuevoAdmin);
+
+        // Creamos el Empleado asociado a ese Admin (¡Vital para tu sistema!)
+        const nuevoEmpleadoAdmin = this.empleadoRepo.create({
+          usuarioId: adminGuardado.id,
+          cargo: 'Administrador', // Le ponemos cargo superior
+          estadoEmpleadoId: 1
+        });
+
+        await this.empleadoRepo.save(nuevoEmpleadoAdmin);
+
+        console.log('✅ Usuario Administrador maestro creado con éxito.');
+      } else {
+        console.log('👍 El usuario admin ya existe. Todo en orden.');
+      }
+    } catch (error) {
+      console.log('❌ Error creando el admin predeterminado:', error);
+    }
+  }
+
+  // =========================================================
+  // 🔥 RESTO DE TUS FUNCIONES (Intactas) 🔥
+  // =========================================================
 
   async create(data: any) {
     try {
